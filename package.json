@@ -1,6 +1,6 @@
 {
   "name": "node-mini-migrations",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "A very small, lightweight and flexible migrations library unconcerned with what database you use",
   "main": "src/index.js",
   "bin": {
@@ -12,11 +12,11 @@
   },
   "author": "Mark Wylde",
   "license": "GPL-3.0",
-  "devDependencies": {
-    "tape": "^4.10.1",
-    "sqlite": "^3.0.3"
-  },
   "dependencies": {
-    "commander": "^3.0.0"
+    "commander": "^4.0.0"
+  },
+  "devDependencies": {
+    "sqlite": "^3.0.3",
+    "tape": "^4.11.0"
   }
 }
