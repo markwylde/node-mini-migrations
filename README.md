@@ -7,92 +7,52 @@
 
 A really simple node migrations library that is completely independant of any database or file system.
 
-## Example Usage
-You need to define a driver for example:
-
-### Installation
+## Installation
 ```bash
-npm install node-mini-migrations
+npm install --save node-mini-migrations
 ```
 
-### Setup
+## Example Usage
+There are two examples, one using sqlite and another using a pretend custom file system database.
+
+[SQLite Driver](example/driver.js)
+[Filesystem Driver](exampleFilesystem/driver.js)
+
+
 ```javascript
-# migrations/driver.js
-const fs = require('fs')
+const sqlite = require('sqlite')
 
-// `passedFunctions` are passed to each migration file and can container
-// a database, like mysql, postgres, mongodb, or anything you want. 
-// It just returns an object that gets passed to migrations.
-const passedFunctions = {
-  tableCreate: (table) => {
-    console.log('would create a table', table)
-  },
+module.exports = function () {
+  let db
 
-  tableDrop: (table) => {
-    console.log('would drop a table', table)
-  },
+  return {
+    init: async () => {
+      db = await sqlite.open('./test.sqlite')
+      await db.run('CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);')
+    },
 
-  insert: (row) => {
-    console.log('would insert a row', row)
-  },
+    finish: async () => {
+      await db.close()
+    },
 
-  remove: (row) => {
-    console.log('would remove a row', row)
-  }
-}
+    getMigrationState: async (id) => {
+      return db.get('SELECT file FROM _migrations WHERE file = ?', [id])
+    },
 
-module.exports = {
-  init: () => {
-    if (!fs.existsSync('test_state.json')) {
-      fs.writeFileSync('test_state.json', JSON.stringify({}))
+    setMigrationUp: async (id) => {
+      return db.run('INSERT INTO _migrations (file) VALUES (?)', [id])
+    },
+
+    setMigrationDown: async (id) => {
+      return db.run('DELETE FROM _migrations WHERE file = ?', [id])
+    },
+
+    getPassedFunctions: async () => {
+      return db
     }
-  },
-
-  finish: () => {
-    console.log('finished migrations')
-  },
-
-  getMigrationState: (id) => {
-    const state = JSON.parse(
-      fs.readFileSync('test_state.json', 'utf8')
-    )
-    return state[id]
-  },
-
-  setMigrationUp: (id) => {
-    const state = JSON.parse(
-      fs.readFileSync('test_state.json', 'utf8')
-    )
-    state[id] = true
-    fs.writeFileSync('test_state.json', JSON.stringify(state))
-  },
-
-  setMigrationDown: (id) => {
-    const state = JSON.parse(
-      fs.readFileSync('test_state.json', 'utf8')
-    )
-    delete state[id]
-    fs.writeFileSync('test_state.json', JSON.stringify(state))
-  },
-
-  getPassedFunctions: () => passedFunctions
-}
-
-```
-### Migration files
-You can then create typical migrations files like:
-
-```javascript
-# migrations/1-my-migration-example.js
-module.exports = {
-  up: db => {
-    return db.tableCreate('test_table')
-  },
-
-  down: db => {
-    return db.tableDrop('test_table')
   }
 }
+
 ```
 
 ### Usage
