@@ -16,8 +16,8 @@ module.exports = async ({ driver, migrations, logger }) => {
         const passedFunctions = await driverInstance.getPassedFunctions()
         await migration.down(passedFunctions)
         await driverInstance.setMigrationDown(migration.id)
-      } catch (err) {
-        logger(`Error tearing down ${migration.id}`, err)
+      } catch (error) {
+        logger(`Error tearing down ${migration.id}`, error)
       }
     } else {
       logger(`Migration ${migration.id} is not active`)

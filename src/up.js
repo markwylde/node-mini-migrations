@@ -16,8 +16,9 @@ module.exports = async ({ driver, migrations, logger }) => {
         const passedFunctions = await driverInstance.getPassedFunctions()
         await migration.up(passedFunctions)
         await driverInstance.setMigrationUp(migration.id)
-      } catch (err) {
-        logger(`Error bringing up ${migration.id}`, err)
+      } catch (error) {
+        logger(`Error bringing up ${migration.id}`, error)
+        throw error
       }
     }
   }
