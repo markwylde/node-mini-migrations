@@ -1,9 +1,9 @@
 module.exports = {
   up: db => {
-    return db.insert('test_table', {id: 1})
+    return db.run(`INSERT INTO test_table (test) VALUES (?)`, ['hello'])
   },
 
   down: db => {
-    return db.remove('test_table', {id: 1})
+    return db.run(`DELETE FROM test_table WHERE test = ?`, ['hello'])
   }
 }

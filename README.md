@@ -20,9 +20,10 @@ npm install node-mini-migrations
 # migrations/driver.js
 const fs = require('fs')
 
-// `db` could be an instance of a database, like mysql, postgres, mongodb,
-// or anything you want. It's just an object that gets passed to migrations.
-const db = {
+// `passedFunctions` are passed to each migration file and can container
+// a database, like mysql, postgres, mongodb, or anything you want. 
+// It just returns an object that gets passed to migrations.
+const passedFunctions = {
   tableCreate: (table) => {
     console.log('would create a table', table)
   },
@@ -45,6 +46,10 @@ module.exports = {
     if (!fs.existsSync('test_state.json')) {
       fs.writeFileSync('test_state.json', JSON.stringify({}))
     }
+  },
+
+  finish: () => {
+    console.log('finished migrations')
   },
 
   getMigrationState: (id) => {
@@ -70,7 +75,7 @@ module.exports = {
     fs.writeFileSync('test_state.json', JSON.stringify(state))
   },
 
-  db
+  getPassedFunctions: () => passedFunctions
 }
 
 ```

@@ -1,9 +1,9 @@
 module.exports = {
   up: db => {
-    return db.tableCreate('test_table')
+    return db.exec('CREATE TABLE test_table (test TEXT)')
   },
 
   down: db => {
-    return db.tableDrop('test_table')
+    return db.exec('DROP TABLE test_table')
   }
 }

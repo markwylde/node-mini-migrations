@@ -1,24 +1,28 @@
-module.exports = async ({driver, migrations}) => {
-  if (driver.init) {
-    await driver.init('up')
+module.exports = async ({driver, migrations, logger}) => {
+  logger = logger || (() => null)
+
+  const driverInstance = driver()
+  if (driverInstance.init) {
+    await driverInstance.init('up')
   }
   
   for (let migration of migrations) {
-    const active = await driver.getMigrationState(migration.id)
+    const active = await driverInstance.getMigrationState(migration.id)
     if (active) {
-      console.log(`Migration ${migration.id} already active`)
+      logger(`Migration ${migration.id} already active`)
     } else {
-      console.log(`Bring up ${migration.id}`)
+      logger(`Bring up ${migration.id}`)
       try {
-        await migration.up(driver.db)
-        await driver.setMigrationUp(migration.id)
+        const passedFunctions = await driverInstance.getPassedFunctions()
+        await migration.up(passedFunctions)
+        await driverInstance.setMigrationUp(migration.id)
       } catch (err) {
-        console.log(`Error bringing up ${migration.id}`, err)
+        logger(`Error bringing up ${migration.id}`, err)
       }
     }
   }
 
-  if (driver.finish) {
-    await driver.finish('up')
+  if (driverInstance.finish) {
+    await driverInstance.finish('up')
   }
 }

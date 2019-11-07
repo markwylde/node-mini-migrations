@@ -1,24 +1,30 @@
-module.exports = async ({driver, migrations}) => {
-  if (driver.init) {
-    await driver.init('down')
+module.exports = async ({driver, migrations, logger}) => {
+  logger = logger || (() => null)
+
+  const driverInstance = await driver()
+  if (driverInstance.init) {
+    await driverInstance.init('down')
   }
-  
+
+  migrations.reverse()
+
   for (let migration of migrations) {
-    const active = await driver.getMigrationState(migration.id)
+    const active = await driverInstance.getMigrationState(migration.id)
     if (active) {
-      console.log(`Tearing down ${migration.id}`)
+      logger(`Tearing down ${migration.id}`)
       try {
-        await migration.down(driver.db)
-        await driver.setMigrationDown(migration.id)
+        const passedFunctions = await driverInstance.getPassedFunctions()
+        await migration.down(passedFunctions)
+        await driverInstance.setMigrationDown(migration.id)
       } catch (err) {
-        console.log(`Error tearing down ${migration.id}`, err)
+        logger(`Error tearing down ${migration.id}`, err)
       }
     } else {
-      console.log(`Migration ${migration.id} is not active`)
+      logger(`Migration ${migration.id} is not active`)
     }
   }
 
-  if (driver.finish) {
-    await driver.finish('down')
+  if (driverInstance.finish) {
+    await driverInstance.finish('down')
   }
 }

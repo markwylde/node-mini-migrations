@@ -1,52 +1,33 @@
 const fs = require('fs')
+const sqlite = require('sqlite')
 
-const db = {
-  tableCreate: (table) => {
-    console.log('would create a table', table)
-  },
+module.exports = function () {
+  let db
 
-  tableDrop: (table) => {
-    console.log('would drop a table', table)
-  },
+  return {
+    init: async () => {
+      db = await sqlite.open('./test.sqlite')
+      await db.run('CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);')
+    },
 
-  insert: (row) => {
-    console.log('would insert a row', row)
-  },
+    finish: async () => {
+      await db.close()
+    },
 
-  remove: (row) => {
-    console.log('would remove a row', row)
-  }
-}
+    getMigrationState: async (id) => {
+      return db.get(`SELECT file FROM _migrations WHERE file = ?`, [id])
+    },
 
-module.exports = {
-  init: () => {
-    if (!fs.existsSync('test_state.json')) {
-      fs.writeFileSync('test_state.json', JSON.stringify({}))
+    setMigrationUp: async (id) => {
+      return db.run(`INSERT INTO _migrations (file) VALUES (?)`, [id])
+    },
+
+    setMigrationDown: async (id) => {
+      return db.run(`DELETE FROM _migrations WHERE file = ?`, [id])
+    },
+
+    getPassedFunctions: async () => {
+      return db
     }
-  },
-
-  getMigrationState: (id) => {
-    const state = JSON.parse(
-      fs.readFileSync('test_state.json', 'utf8')
-    )
-    return state[id]
-  },
-
-  setMigrationUp: (id) => {
-    const state = JSON.parse(
-      fs.readFileSync('test_state.json', 'utf8')
-    )
-    state[id] = true
-    fs.writeFileSync('test_state.json', JSON.stringify(state))
-  },
-
-  setMigrationDown: (id) => {
-    const state = JSON.parse(
-      fs.readFileSync('test_state.json', 'utf8')
-    )
-    delete state[id]
-    fs.writeFileSync('test_state.json', JSON.stringify(state))
-  },
-
-  db
+  }
 }

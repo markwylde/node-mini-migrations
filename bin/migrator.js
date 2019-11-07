@@ -13,13 +13,19 @@ program
 program
   .command('up')
   .action((file, cmd) => {
-    up(prepareRun(program.directory))
+    up({
+      logger: console.log,
+      ...prepareRun(program.directory)
+    })
   })
 
 program
   .command('down')
   .action((file, cmd) => {
-    down(prepareRun(program.directory))
+    down({
+      logger: console.log,
+      ...prepareRun(program.directory)
+    })
   })
   
 program
