@@ -1,4 +1,4 @@
-module.exports = async ({driver, migrations, logger}) => {
+module.exports = async ({ driver, migrations, logger }) => {
   logger = logger || (() => null)
 
   const driverInstance = await driver()
@@ -8,7 +8,7 @@ module.exports = async ({driver, migrations, logger}) => {
 
   migrations.reverse()
 
-  for (let migration of migrations) {
+  for (const migration of migrations) {
     const active = await driverInstance.getMigrationState(migration.id)
     if (active) {
       logger(`Tearing down ${migration.id}`)

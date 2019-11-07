@@ -8,9 +8,9 @@ const prepareRun = (dir) => {
   const migrations = fs.readdirSync(dir)
     .filter(file => !['driver.js'].includes(file))
     .filter(file => file.endsWith('.js'))
-    .map(file => ({id: file, ...require(path.join(dir, file))}))
+    .map(file => ({ id: file, ...require(path.join(dir, file)) }))
 
-  return {driver, migrations}
+  return { driver, migrations }
 }
 
 module.exports = prepareRun

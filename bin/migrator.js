@@ -27,6 +27,6 @@ program
       ...prepareRun(program.directory)
     })
   })
-  
+
 program
   .parse(process.argv)

@@ -2,7 +2,7 @@ const fs = require('fs')
 const test = require('tape')
 const sqlite = require('sqlite')
 
-const {prepareRun, down, up} = require('../src')
+const { prepareRun, down, up } = require('../src')
 
 function clean () {
   if (fs.existsSync('./test.sqlite')) {
@@ -35,7 +35,7 @@ test('migrate examples up, down', async function (t) {
   await down(prepareRun('./example'))
 
   const db = await sqlite.open('./test.sqlite')
-  const tables = await db.all(`SELECT name FROM sqlite_master WHERE type='table'`)
+  const tables = await db.all('SELECT name FROM sqlite_master WHERE type=\'table\'')
   t.equal(tables.length, 1)
   t.equal(tables[0].name, '_migrations')
 

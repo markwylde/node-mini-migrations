@@ -1,4 +1,3 @@
-const fs = require('fs')
 const sqlite = require('sqlite')
 
 module.exports = function () {
@@ -15,15 +14,15 @@ module.exports = function () {
     },
 
     getMigrationState: async (id) => {
-      return db.get(`SELECT file FROM _migrations WHERE file = ?`, [id])
+      return db.get('SELECT file FROM _migrations WHERE file = ?', [id])
     },
 
     setMigrationUp: async (id) => {
-      return db.run(`INSERT INTO _migrations (file) VALUES (?)`, [id])
+      return db.run('INSERT INTO _migrations (file) VALUES (?)', [id])
     },
 
     setMigrationDown: async (id) => {
-      return db.run(`DELETE FROM _migrations WHERE file = ?`, [id])
+      return db.run('DELETE FROM _migrations WHERE file = ?', [id])
     },
 
     getPassedFunctions: async () => {

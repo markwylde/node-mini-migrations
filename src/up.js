@@ -1,12 +1,12 @@
-module.exports = async ({driver, migrations, logger}) => {
+module.exports = async ({ driver, migrations, logger }) => {
   logger = logger || (() => null)
 
   const driverInstance = driver()
   if (driverInstance.init) {
     await driverInstance.init('up')
   }
-  
-  for (let migration of migrations) {
+
+  for (const migration of migrations) {
     const active = await driverInstance.getMigrationState(migration.id)
     if (active) {
       logger(`Migration ${migration.id} already active`)
