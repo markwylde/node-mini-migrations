@@ -79,4 +79,4 @@ up(prepareRun('./migrations'))
 ```
 
 ## License
-This project is licensed under the terms of the GPLv3 license.
+This project is licensed under the terms of the MIT license.
