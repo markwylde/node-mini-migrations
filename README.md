@@ -19,6 +19,7 @@ There are two examples, one using sqlite and another using a pretend custom file
 2. [Filesystem Driver](exampleFilesystem/driver.js)
 
 
+## Preview SQLite driver
 ```javascript
 const sqlite = require('sqlite')
 
@@ -53,6 +54,19 @@ module.exports = function () {
   }
 }
 
+```
+
+## Preview SQLite migration
+```javascript
+module.exports = {
+  up: db => {
+    return db.exec('CREATE TABLE test_table (test TEXT)')
+  },
+
+  down: db => {
+    return db.exec('DROP TABLE test_table')
+  }
+}
 ```
 
 ### Usage
