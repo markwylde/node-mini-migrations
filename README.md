@@ -15,8 +15,8 @@ npm install --save node-mini-migrations
 ## Example Usage
 There are two examples, one using sqlite and another using a pretend custom file system database.
 
-[SQLite Driver](example/driver.js)
-[Filesystem Driver](exampleFilesystem/driver.js)
+1. [SQLite Driver](example/driver.js)
+2. [Filesystem Driver](exampleFilesystem/driver.js)
 
 
 ```javascript
