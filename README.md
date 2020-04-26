@@ -17,7 +17,7 @@ npm install --save node-mini-migrations
 ```javascript
 const sqlite = require('sqlite-fp');
 const righto = require('righto');
-const righto = require('node-mini-migrations/up');
+const up = require('node-mini-migrations/up');
 
 function migrator (db) {
   return {
