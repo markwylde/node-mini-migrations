@@ -13,6 +13,6 @@
     "righto-series": "^1.0.1",
     "righto-tape": "^1.0.4",
     "sqlite-fp": "^2.0.0",
-    "tape": "^4.11.0"
+    "tape": "^4.13.2"
   }
 }
