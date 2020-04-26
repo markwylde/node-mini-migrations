@@ -13,50 +13,43 @@ npm install --save node-mini-migrations
 ```
 
 ## Example Usage
-There are two examples, one using sqlite and another using a pretend custom file system database.
-
-1. [SQLite Driver](example/driver.js)
-2. [Filesystem Driver](exampleFilesystem/driver.js)
-
-
-### Preview SQLite driver
+### driver
 ```javascript
-const sqlite = require('sqlite')
+const sqlite = require('sqlite-fp');
+const righto = require('righto');
 
-module.exports = function () {
-  let db
-
+function migrator (db) {
   return {
-    init: async () => {
-      db = await sqlite.open('./test.sqlite')
-      await db.run('CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);')
+    init: (direction, callback) => {
+      sqlite.run(db, 'CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);', callback);
     },
 
-    finish: async () => {
-      await db.close()
+    getMigrationState: (id, callback) => {
+      sqlite.get(db, 'SELECT file FROM _migrations WHERE file = ?', [id], (error, result) => {
+        callback(error, (result && result.length > 0));
+      });
     },
 
-    getMigrationState: async (id) => {
-      return db.get('SELECT file FROM _migrations WHERE file = ?', [id])
+    setMigrationUp: (id, callback) => {
+      sqlite.run(db, 'INSERT INTO _migrations (file) VALUES (?)', [id], callback);
     },
 
-    setMigrationUp: async (id) => {
-      return db.run('INSERT INTO _migrations (file) VALUES (?)', [id])
+    setMigrationDown: (id, callback) => {
+      sqlite.run(db, 'DELETE FROM _migrations WHERE file = ?', [id], callback);
     },
 
-    setMigrationDown: async (id) => {
-      return db.run('DELETE FROM _migrations WHERE file = ?', [id])
-    },
+    handler: (fn, callback) => fn(db, callback)
+  };
+};
 
-    getPassedFunctions: async () => {
-      return db
-    }
-  }
-}
-
+const db = righto(sqlite.connect, './test.sqlite');
+const driver = righto.sync(migrator, db);
+const migrations = getMigrationsFromDirectory('./test/migrations');
+const migrated = righto(up, driver, migrations);
+migrated(callback)
 ```
 
-### Preview SQLite migration
+### migration
 ```javascript
 module.exports = {
   up: db => {
@@ -67,15 +60,6 @@ module.exports = {
     return db.exec('DROP TABLE test_table')
   }
 }
-```
-
-### Usage
-You run `migrator up` to bring up any migrations or `migrator down` to bring them down.
-
-#### Or inside node app
-```javascript
-const {up, prepareRun} = require('node-mini-migrations')
-up(prepareRun('./migrations'))
 ```
 
 ## License

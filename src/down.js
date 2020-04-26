@@ -1,30 +1,44 @@
-module.exports = async ({ driver, migrations, logger }) => {
-  logger = logger || (() => null)
+const righto = require('righto');
+const rightoSeries = require('righto-series');
 
-  const driverInstance = await driver()
-  if (driverInstance.init) {
-    await driverInstance.init('down')
+function down (driver, migrations, logger, steps, callback) {
+  if (arguments.length === 4) {
+    callback = steps;
+    steps = logger;
+    logger = () => null;
   }
 
-  migrations.reverse()
-
-  for (const migration of migrations) {
-    const active = await driverInstance.getMigrationState(migration.id)
-    if (active) {
-      logger(`Tearing down ${migration.id}`)
-      try {
-        const passedFunctions = await driverInstance.getPassedFunctions()
-        await migration.down(passedFunctions)
-        await driverInstance.setMigrationDown(migration.id)
-      } catch (error) {
-        logger(`Error tearing down ${migration.id}`, error)
-      }
-    } else {
-      logger(`Migration ${migration.id} is not active`)
+  rightoSeries(function * () {
+    if (driver.init) {
+      yield righto(driver.init, 'down');
     }
-  }
 
-  if (driverInstance.finish) {
-    await driverInstance.finish('down')
-  }
+    const reversedMigrations = [...migrations].reverse();
+
+    let currentSteps = 0;
+    for (const migration of reversedMigrations) {
+      currentSteps = currentSteps + 1;
+
+      if (currentSteps > steps) {
+        break;
+      }
+
+      const active = yield righto(driver.getMigrationState, migration.id);
+
+      if (!active) {
+        logger(`Migration ${migration.id} skipped (not active)`);
+      } else {
+        logger(`Bring down ${migration.id}`);
+
+        yield righto(driver.handler, migration.down);
+        yield righto(driver.setMigrationDown, migration.id);
+      }
+    }
+
+    if (driver.finish) {
+      yield righto(driver.finish, 'down');
+    }
+  }, callback);
 }
+
+module.exports = down;

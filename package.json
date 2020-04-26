@@ -1,22 +1,18 @@
 {
   "name": "node-mini-migrations",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "A very small, lightweight and flexible migrations library unconcerned with what database you use",
   "main": "src/index.js",
-  "bin": {
-    "migrator": "./bin/migrator.js"
-  },
   "scripts": {
-    "test": "tape test/**/*.js test/*.js",
-    "example": "./bin/migrator.js -d example up"
+    "test": "node test"
   },
   "author": "Mark Wylde",
   "license": "MIT",
-  "dependencies": {
-    "commander": "^4.0.0"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "sqlite": "^3.0.3",
+    "righto-series": "^1.0.1",
+    "righto-tape": "^1.0.4",
+    "sqlite-fp": "^2.0.0",
     "tape": "^4.11.0"
   }
 }

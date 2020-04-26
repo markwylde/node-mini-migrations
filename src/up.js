@@ -1,29 +1,34 @@
-module.exports = async ({ driver, migrations, logger }) => {
-  logger = logger || (() => null)
+const righto = require('righto');
+const rightoSeries = require('righto-series');
 
-  const driverInstance = driver()
-  if (driverInstance.init) {
-    await driverInstance.init('up')
+function up (driver, migrations, logger, callback) {
+  if (arguments.length === 3) {
+    callback = logger;
+    logger = () => null;
   }
 
-  for (const migration of migrations) {
-    const active = await driverInstance.getMigrationState(migration.id)
-    if (active) {
-      logger(`Migration ${migration.id} already active`)
-    } else {
-      logger(`Bring up ${migration.id}`)
-      try {
-        const passedFunctions = await driverInstance.getPassedFunctions()
-        await migration.up(passedFunctions)
-        await driverInstance.setMigrationUp(migration.id)
-      } catch (error) {
-        logger(`Error bringing up ${migration.id}`, error)
-        throw error
+  rightoSeries(function * () {
+    if (driver.init) {
+      yield righto(driver.init, 'up');
+    }
+
+    for (const migration of migrations) {
+      const active = yield righto(driver.getMigrationState, migration.id);
+
+      if (active) {
+        logger(`Migration ${migration.id} skipped (already active)`);
+      } else {
+        logger(`Bring up ${migration.id}`);
+
+        yield righto(driver.handler, migration.up);
+        yield righto(driver.setMigrationUp, migration.id);
       }
     }
-  }
 
-  if (driverInstance.finish) {
-    await driverInstance.finish('up')
-  }
+    if (driver.finish) {
+      yield righto(driver.finish, 'up');
+    }
+  }, callback);
 }
+
+module.exports = up;
