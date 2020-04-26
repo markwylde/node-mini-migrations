@@ -25,9 +25,7 @@ function migrator (db) {
     },
 
     getMigrationState: (id, callback) => {
-      sqlite.get(db, 'SELECT file FROM _migrations WHERE file = ?', [id], (error, result) => {
-        callback(error, (result && result.length > 0));
-      });
+      sqlite.getOne(db, 'SELECT file FROM _migrations WHERE file = ?', [id], callback);
     },
 
     setMigrationUp: (id, callback) => {

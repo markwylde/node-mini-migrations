@@ -6,15 +6,8 @@ module.exports = function (db) {
       sqlite.run(db, 'CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);', callback);
     },
 
-    finish: (direction, callback) => {
-      // sqlite.close(db, callback);
-      callback();
-    },
-
     getMigrationState: (id, callback) => {
-      sqlite.get(db, 'SELECT file FROM _migrations WHERE file = ?', [id], (error, result) => {
-        callback(error, (result && result.length > 0));
-      });
+      sqlite.get(db, 'SELECT file FROM _migrations WHERE file = ?', [id], callback);
     },
 
     setMigrationUp: (id, callback) => {
