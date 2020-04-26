@@ -1,6 +1,6 @@
 {
   "name": "node-mini-migrations",
-  "version": "3.0.0",
+  "version": "4.0.0",
   "description": "A very small, lightweight and flexible migrations library unconcerned with what database you use",
   "main": "src/index.js",
   "scripts": {
