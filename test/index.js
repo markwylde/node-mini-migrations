@@ -4,7 +4,7 @@ const sqlite = require('sqlite-fp');
 const righto = require('righto');
 const migrator = require('./migrations');
 
-const { getMigrationsFromDirectory, down, up } = require('../src');
+const { getMigrationsFromDirectory, down, up } = require('../');
 
 function clean () {
   if (fs.existsSync('./test.sqlite')) {
