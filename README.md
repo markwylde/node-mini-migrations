@@ -52,12 +52,12 @@ migrated(callback)
 ### migration
 ```javascript
 module.exports = {
-  up: db => {
-    return db.exec('CREATE TABLE test_table (test TEXT)')
+  up: (db, callback) => {
+    db.exec('CREATE TABLE test_table (test TEXT)', callback)
   },
 
-  down: db => {
-    return db.exec('DROP TABLE test_table')
+  down: (db, callback) => {
+    db.exec('DROP TABLE test_table', callback)
   }
 }
 ```
