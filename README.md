@@ -15,49 +15,48 @@ npm install --save node-mini-migrations
 ## Example Usage
 ### driver
 ```javascript
-const sqlite = require('sqlite-fp');
-const righto = require('righto');
+const sqlite = require('sqlite-fp/promises');
 const up = require('node-mini-migrations/up');
 const getMigrationsFromDirectory = require('node-mini-migrations/getMigrationsFromDirectory');
 
 function migrator (db) {
   return {
-    init: (direction, callback) => {
-      sqlite.run(db, 'CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);', callback);
+    init: (direction) => {
+      return sqlite.run(db, 'CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);');
     },
 
-    getMigrationState: (id, callback) => {
-      sqlite.getOne(db, 'SELECT file FROM _migrations WHERE file = ?', [id], callback);
+    getMigrationState: (id) => {
+      return sqlite.getOne(db, 'SELECT file FROM _migrations WHERE file = ?', [id]);
     },
 
-    setMigrationUp: (id, callback) => {
-      sqlite.run(db, 'INSERT INTO _migrations (file) VALUES (?)', [id], callback);
+    setMigrationUp: (id) => {
+      return sqlite.run(db, 'INSERT INTO _migrations (file) VALUES (?)', [id]);
     },
 
-    setMigrationDown: (id, callback) => {
-      sqlite.run(db, 'DELETE FROM _migrations WHERE file = ?', [id], callback);
+    setMigrationDown: (id) => {
+      return sqlite.run(db, 'DELETE FROM _migrations WHERE file = ?', [id]);
     },
 
-    handler: (fn, callback) => fn(db, callback)
+    handler: (fn) => fn(db)
   };
 };
 
-const db = righto(sqlite.connect, './test.sqlite');
-const driver = righto.sync(migrator, db);
-const migrations = getMigrationsFromDirectory('./test/migrations');
-const migrated = righto(up, driver, migrations);
-migrated(callback)
+const db = await sqlite.connect('./test.sqlite');
+await up(
+  migrator(db),
+  getMigrationsFromDirectory('./test/migrations')
+);
 ```
 
 ### migration
 ```javascript
 module.exports = {
-  up: (db, callback) => {
-    db.exec('CREATE TABLE test_table (test TEXT)', callback)
+  up: (db) => {
+    return db.exec('CREATE TABLE test_table (test TEXT)')
   },
 
-  down: (db, callback) => {
-    db.exec('DROP TABLE test_table', callback)
+  down: (db) => {
+    return db.exec('DROP TABLE test_table')
   }
 }
 ```

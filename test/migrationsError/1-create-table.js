@@ -1,11 +1,9 @@
-const sqlite = require('sqlite-fp');
-
 module.exports = {
-  up: (db, callback) => {
-    return sqlite.run(db, 'CREATE_WHOOPS TABLE test_table (test TEXT)', callback);
+  up: (db) => {
+    return db.run('CREATE_WHOOPS TABLE test_table (test TEXT)');
   },
 
-  down: (db, callback) => {
-    return sqlite.run(db, 'DROP TABLE test_table', callback);
+  down: (db) => {
+    return db.run('DROP TABLE test_table');
   }
 };

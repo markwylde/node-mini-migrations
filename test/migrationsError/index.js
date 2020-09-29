@@ -1,23 +1,29 @@
-const sqlite = require('sqlite-fp');
+const sqlite = require('sqlite-fp/promises');
 
 module.exports = function (db) {
+  const monad = {
+    run: (...args) => sqlite.run(db, ...args),
+    getAll: (...args) => sqlite.getAll(db, ...args),
+    getOne: (...args) => sqlite.getOne(db, ...args)
+  };
+
   return {
-    init: (direction, callback) => {
-      sqlite.run(db, 'CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);', callback);
+    init: (direction) => {
+      return sqlite.run(db, 'CREATE TABLE IF NOT EXISTS _migrations (file TEXT PRIMARY KEY);');
     },
 
-    getMigrationState: (id, callback) => {
-      sqlite.get(db, 'SELECT file FROM _migrations WHERE file = ?', [id], callback);
+    getMigrationState: (id) => {
+      return sqlite.getOne(db, 'SELECT file FROM _migrations WHERE file = ?', [id]);
     },
 
-    setMigrationUp: (id, callback) => {
-      sqlite.run(db, 'INSERT INTO _migrations (file) VALUES (?)', [id], callback);
+    setMigrationUp: (id) => {
+      return sqlite.run(db, 'INSERT INTO _migrations (file) VALUES (?)', [id]);
     },
 
-    setMigrationDown: (id, callback) => {
-      sqlite.run(db, 'DELETE FROM _migrations WHERE file = ?', [id], callback);
+    setMigrationDown: (id) => {
+      return sqlite.run(db, 'DELETE FROM _migrations WHERE file = ?', [id]);
     },
 
-    handler: (fn, callback) => fn(db, callback)
+    handler: (fn) => fn(monad)
   };
 };

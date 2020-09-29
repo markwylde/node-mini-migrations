@@ -1,11 +1,9 @@
-const sqlite = require('sqlite-fp');
-
 module.exports = {
-  up: (db, callback) => {
-    return sqlite.run(db, 'INSERT INTO test_table (test) VALUES (?)', ['hello'], callback);
+  up: (db) => {
+    return db.run('INSERT INTO test_table (test) VALUES (?)', ['hello']);
   },
 
-  down: (db, callback) => {
-    return sqlite.run(db, 'DELETE FROM test_table WHERE test = ?', ['hello'], callback);
+  down: (db) => {
+    return db.run('DELETE FROM test_table WHERE test = ?', ['hello']);
   }
 };
