@@ -1,19 +1,33 @@
 {
-  "name": "node-mini-migrations",
+  "name": "mini-migrations",
   "version": "5.0.0",
+  "type": "module",
   "description": "A very small, lightweight and flexible migrations library unconcerned with what database you use",
   "main": "index.js",
   "scripts": {
-    "test": "node test"
+    "test": "c8 node test"
   },
-  "author": "Mark Wylde",
+  "author": {
+    "name": "Mark Wylde",
+    "email": "me@markwylde.com",
+    "url": "https://github.com/markwylde"
+  },
   "license": "MIT",
-  "dependencies": {
-    "righto-series": "^1.0.1"
-  },
   "devDependencies": {
-    "righto-tape": "^1.0.4",
-    "sqlite-fp": "^2.0.0",
-    "tape": "^4.13.2"
-  }
+    "basictap": "^3.4.3",
+    "c8": "^7.12.0",
+    "sqlite-fp": "^2.1.2"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markwylde/node-mini-migrations.git"
+  },
+  "keywords": [],
+  "bugs": {
+    "url": "https://github.com/markwylde/node-mini-migrations/issues"
+  },
+  "homepage": "https://github.com/markwylde/node-mini-migrations#readme"
 }

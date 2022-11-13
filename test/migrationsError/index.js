@@ -1,6 +1,6 @@
-const sqlite = require('sqlite-fp/promises');
+import sqlite from 'sqlite-fp/promises.js';
 
-module.exports = function (db) {
+export default function (db) {
   const monad = {
     run: (...args) => sqlite.run(db, ...args),
     getAll: (...args) => sqlite.getAll(db, ...args),
@@ -26,4 +26,4 @@ module.exports = function (db) {
 
     handler: (fn) => fn(monad)
   };
-};
+}

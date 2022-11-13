@@ -1,15 +1,17 @@
-const path = require('path');
-const fs = require('fs');
+import path from 'path';
+import fs from 'fs';
 
-const getMigrationsFromDirectory = (dir) => {
+export const getMigrationsFromDirectory = (dir) => {
   dir = path.resolve(dir);
 
-  const migrations = fs.readdirSync(dir)
-    .filter(file => !['index.js'].includes(file))
-    .filter(file => file.endsWith('.js'))
-    .map(file => ({ id: file, ...require(path.join(dir, file)) }));
+  const migrations = Promise.all(
+    fs.readdirSync(dir)
+      .filter(file => !['index.js'].includes(file))
+      .filter(file => file.endsWith('.js'))
+      .map(async file => ({ id: file, ...await import(path.join(dir, file)) }))
+  );
 
   return migrations;
 };
 
-module.exports = getMigrationsFromDirectory;
+export default getMigrationsFromDirectory;

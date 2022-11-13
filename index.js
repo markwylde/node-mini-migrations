@@ -1,5 +1,3 @@
-module.exports = {
-  up: require('./up'),
-  down: require('./down'),
-  getMigrationsFromDirectory: require('./getMigrationsFromDirectory')
-};
+export { up } from './up.js';
+export { down } from './down.js';
+export { getMigrationsFromDirectory } from './getMigrationsFromDirectory.js';

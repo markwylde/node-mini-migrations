@@ -1,4 +1,4 @@
-async function up (driver, migrations, logger) {
+export async function up (driver, migrations, logger) {
   logger = logger || (() => null);
 
   if (driver.init) {
@@ -23,4 +23,4 @@ async function up (driver, migrations, logger) {
   }
 }
 
-module.exports = up;
+export default up;

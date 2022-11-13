@@ -1,4 +1,4 @@
-async function down (driver, migrations, logger, steps) {
+export async function down (driver, migrations, logger, steps) {
   logger = logger || (() => null);
   steps = steps || 1;
 
@@ -33,4 +33,4 @@ async function down (driver, migrations, logger, steps) {
   }
 }
 
-module.exports = down;
+export default down;

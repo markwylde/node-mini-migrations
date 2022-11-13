@@ -1,10 +1,10 @@
-const fs = require('fs');
-const test = require('righto-tape');
-const sqlite = require('sqlite-fp/promises');
+import fs from 'fs';
+import test from 'basictap';
+import sqlite from 'sqlite-fp/promises.js';
 
-const migrator = require('./migrations');
+import migrator from './migrations/index.js';
 
-const { getMigrationsFromDirectory, down, up } = require('../');
+import { getMigrationsFromDirectory, down, up } from '../index.js';
 
 function clean () {
   if (fs.existsSync('./test.sqlite')) {
@@ -19,7 +19,7 @@ test('migrate examples up', async function (t) {
 
   const db = await sqlite.connect('./test.sqlite');
   const driver = migrator(db);
-  const migrations = getMigrationsFromDirectory('./test/migrations');
+  const migrations = await getMigrationsFromDirectory('./test/migrations');
   await up(driver, migrations, null);
 
   t.ok(fs.existsSync('./test.sqlite'));
@@ -36,7 +36,7 @@ test('migrate examples up, down', async function (t) {
 
   const db = await sqlite.connect('./test.sqlite');
   const driver = migrator(db);
-  const migrations = getMigrationsFromDirectory('./test/migrations');
+  const migrations = await getMigrationsFromDirectory('./test/migrations');
   await up(driver, migrations, null);
   await down(driver, migrations, null, 1);
 
@@ -54,7 +54,7 @@ test('migrate examples up, down, up', async function (t) {
 
   const db = await sqlite.connect('./test.sqlite');
   const driver = migrator(db);
-  const migrations = getMigrationsFromDirectory('./test/migrations');
+  const migrations = await getMigrationsFromDirectory('./test/migrations');
   await up(driver, migrations, null);
   await down(driver, migrations, null, 1);
   await up(driver, migrations, null);
@@ -74,7 +74,7 @@ test('migrate examples up with error', async function (t) {
   const db = await sqlite.connect('./test.sqlite');
   try {
     const driver = migrator(db);
-    const migrations = getMigrationsFromDirectory('./test/migrationsError');
+    const migrations = await getMigrationsFromDirectory('./test/migrationsError');
     await up(driver, migrations, null);
   } catch (error) {
     t.ok(error.message.includes('syntax error'));
