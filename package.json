@@ -1,6 +1,6 @@
 {
   "name": "mini-migrations",
-  "version": "5.0.0",
+  "version": "6.0.0",
   "type": "module",
   "description": "A very small, lightweight and flexible migrations library unconcerned with what database you use",
   "main": "index.js",
